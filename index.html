@@ -85,31 +85,39 @@
     </div>
 
     <script>
-        function getData() {
-            fetch('/get_data')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('temp').innerText = data.temp + '°C';
-                    document.getElementById('feels_like').innerText = data.feels_like + '°C';
-                    document.getElementById('max_temp').innerText = data.max_temp + '°C';
-                    document.getElementById('min_temp').innerText = data.min_temp + '°C';
+    function getData() {
+        console.log("Button clicked, fetching data..."); // Debugging line
+        fetch('/get_data')
+            .then(response => {
+                console.log("Data received", response); // Debugging line
+                return response.json();
+            })
+            .then(data => {
+                console.log("Data parsed", data); // Debugging line
+                document.getElementById('temp').innerText = data.temp + '°C';
+                document.getElementById('feels_like').innerText = data.feels_like + '°C';
+                document.getElementById('max_temp').innerText = data.max_temp + '°C';
+                document.getElementById('min_temp').innerText = data.min_temp + '°C';
 
-                    let locationData = document.getElementById('location-data');
-                    for (let key in data.location_data) {
-                        let row = document.createElement('tr');
-                        let cellKey = document.createElement('td');
-                        let cellValue = document.createElement('td');
-                        cellKey.innerText = key;
-                        cellValue.innerText = data.location_data[key];
-                        row.appendChild(cellKey);
-                        row.appendChild(cellValue);
-                        locationData.appendChild(row);
-                    }
+                let locationData = document.getElementById('location-data');
+                locationData.innerHTML = ''; // Clear previous data
+                for (let key in data.location_data) {
+                    let row = document.createElement('tr');
+                    let cellKey = document.createElement('td');
+                    let cellValue = document.createElement('td');
+                    cellKey.innerText = key;
+                    cellValue.innerText = data.location_data[key];
+                    row.appendChild(cellKey);
+                    row.appendChild(cellValue);
+                    locationData.appendChild(row);
+                }
 
-                    document.getElementById('weather-info').style.display = 'block';
-                    document.getElementById('location-info').style.display = 'block';
-                });
-        }
-    </script>
+                document.getElementById('weather-info').style.display = 'block';
+                document.getElementById('location-info').style.display = 'block';
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+</script>
+
 </body>
 </html>
