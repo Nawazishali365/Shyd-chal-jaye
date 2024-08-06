@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, send_file
 import requests
 from urllib.request import urlopen
 import json
@@ -7,9 +7,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return send_file('index.html')
 
-@app.route('/get_data', methods=['GET'])
+@app.route('/get_data')
 def get_data():
     # Fetch location data
     locURL = 'https://ipinfo.io/json'
@@ -30,16 +30,19 @@ def get_data():
     max_temp = float(data['main']['temp_max']) - 273.15
     min_temp = float(data['main']['temp_min']) - 273.15
 
-    # Prepare data to be sent
-    weather_data = {
-        'temp': round(temp, 2),
-        'feels_like': round(feels_like, 2),
-        'max_temp': round(max_temp, 2),
-        'min_temp': round(min_temp, 2),
-        'location_data': YourLoc
+    # Extract location data
+    location_data = {
+        'Your IP': YourLoc.get('ip'),
+        'Your City': YourLoc.get('city'),
+        'Your Region': YourLoc.get('region'),
+        'Your Country': YourLoc.get('country'),
+        'Your Location': YourLoc.get('loc'),
+        'Your Wifi': YourLoc.get('org'),
+        'Your Postal': YourLoc.get('postal'),
+        'Your Time Zone': YourLoc.get('timezone')
     }
 
-    return jsonify(weather_data)
+    return jsonify(temp=temp, feels_like=feels_like, max_temp=max_temp, min_temp=min_temp, location_data=location_data)
 
 if __name__ == '__main__':
     app.run(debug=True)
